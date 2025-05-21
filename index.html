@@ -1,14 +1,45 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>简单问候页面</title>
+    <title>显示产品信息</title>
 </head>
 
 <body>
-    <h1>你好呀</h1>
+    <h1>产品信息</h1>
+    <div id="product-list"></div>
+
+    <script>
+        // 使用 fetch API 读取 JSON 文件
+        fetch('products.json')
+          .then(response => {
+                // 检查响应是否成功
+                if (!response.ok) {
+                    throw new Error('网络响应不正常');
+                }
+                // 将响应转换为 JSON 格式
+                return response.json();
+            })
+          .then(data => {
+                // 获取用于显示内容的 div 元素
+                const productList = document.getElementById('product-list');
+                // 遍历 JSON 数据中的每个产品
+                data.forEach(product => {
+                    // 创建一个段落元素
+                    const p = document.createElement('p');
+                    // 设置段落元素的文本内容为产品信息
+                    p.textContent = `商品名: ${product.商品名}, 价格: ${product.价格}`;
+                    // 将段落元素添加到 div 中
+                    productList.appendChild(p);
+                });
+            })
+          .catch(error => {
+                // 处理错误
+                console.error('获取数据时出错:', error);
+            });
+    </script>
 </body>
 
 </html>
