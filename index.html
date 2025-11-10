@@ -127,7 +127,6 @@
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             /* 给主体内容添加边距，避免被顶部搜索栏和底部按钮遮挡 */
             margin-top: 60px;  /* 等于搜索栏高度 */
@@ -135,7 +134,6 @@
             padding: 20px;
             min-height: 2000px; /* 仅用于测试滚动效果，实际可删除 */
         }
-
         /* 顶部搜索栏 - 固定在顶部 */
         .search-bar {
             position: fixed;  /* 固定定位，不随滚动移动 */
@@ -150,23 +148,6 @@
             align-items: center; /* 垂直居中 */
             z-index: 100;  /* 确保在其他内容上方 */
         }
-
-        .search-input {
-            width: 100%;
-            height: 40px;
-            padding: 0 15px 0 35px; /* 左侧留空间放搜索图标 */
-            border: 1px solid #ddd;
-            border-radius: 20px; /* 圆角样式 */
-            font-size: 14px;
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23999' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E") no-repeat 12px center;
-            background-size: 16px;
-            outline: none;
-        }
-
-        .search-input::placeholder {
-            color: #999;
-        }
-
         /* 底部按钮区域 - 固定在底部 */
         .bottom-buttons {
             position: fixed;  /* 固定定位 */
@@ -183,48 +164,28 @@
             padding: 0 20px;
             z-index: 100; /* 确保在其他内容上方 */
         }
-
-        .bottom-btn {
+        .bottom-button {
             padding: 10px 20px;
-            background-color: #c1703d; /* 棕色按钮 */
+            background-color: #8b4513;
             color: white;
             border: none;
-            border-radius: 5px;
-            font-size: 16px;
+            border-radius: 4px;
             cursor: pointer;
+            font-size: 14px;
             transition: background-color 0.2s;
         }
-
-        .bottom-btn:hover {
-            background-color: #a85d32; /*  hover时加深颜色 */
-        }
-
-        /* 主体内容样式（仅示例，实际可根据需求修改） */
-        .content {
-            font-size: 16px;
-            line-height: 1.6;
+        .bottom-button:hover {
+            background-color: #6d380e;
         }
     </style>
 </head>
 <body>
-    <!-- 顶部固定搜索栏 -->
+    <!-- 顶部固定搜索框（保留唯一搜索框，绑定搜索功能） -->
     <div class="search-bar">
-        <input type="text" class="search-input" placeholder="请输入商品名称">
+        <input type="search" class="search-input" placeholder="请输入商品名称，未列产品可微信咨询" 
+               oninput="filterTable()" onkeydown="handleKeyDown(event)">
     </div>
 
-
-    <!-- 底部固定按钮区域 -->
-    <div class="bottom-buttons">
-        <button class="bottom-btn">首页</button>
-        <button class="bottom-btn">购物清单</button>
-        <button class="bottom-btn">复制微信</button>
-    </div>
-</body>
-<body>
-    <!-- 搜索框 -->
-    <input type="search" placeholder="请输入商品名称，未列产品可微信咨询" class="search-input" oninput="filterTable()"
-        onkeydown="handleKeyDown(event)">
-    
     <!-- 商品表格 -->
     <table>
         <thead>
@@ -244,7 +205,6 @@
     <div class="load-error" id="loadError" style="display: none;">
         商品数据加载失败，请检查products.json文件是否存在且格式正确！
     </div>
-
     <!-- 加购弹窗 -->
     <div class="popup" id="myPopup">
         <div class="popup-content">
@@ -258,13 +218,11 @@
             <button class="add-btn" onclick="addToCart()">加入清单</button>
         </div>
     </div>
-
     <!-- 已加购提示 -->
     <div class="added-toast" id="addedToast">已加购</div>
     <!-- 复制微信提示 -->
     <div class="copied-toast" id="copiedToast">微信复制成功</div>
-
-    <!-- 底部导航按钮 -->
+    <!-- 底部固定导航按钮（保留唯一底部按钮区） -->
     <div class="bottom-buttons">
         <button class="bottom-button" onclick="goToHome()">首页</button>
         <button class="bottom-button" onclick="goToCart()">购物清单</button>
@@ -276,7 +234,6 @@
         const loadError = document.getElementById('loadError');
         let currentProduct = null; // 当前选中的商品
         let currentQuantity = 1; // 加购数量（默认1）
-
         // 核心：读取同文件夹的products.json文件
         fetch('products.json') // 路径确保与shop.html同级
            .then(response => {
@@ -298,7 +255,6 @@
                         console.warn('跳过无效商品（缺少商品名或价格）：', product);
                         return;
                     }
-
                     const row = document.createElement('tr');
                     // 时间列（当前时间）
                     const timeCell = document.createElement('td');
@@ -329,7 +285,6 @@
                         document.getElementById('myPopup').style.display = 'block';
                     };
                     actionCell.appendChild(addBtn);
-
                     // 组装表格行
                     row.appendChild(timeCell);
                     row.appendChild(nameCell);
@@ -343,7 +298,6 @@
                 loadError.style.display = 'block';
                 console.error('商品数据加载失败：', error);
             });
-
         // 1. 搜索功能（根据商品名过滤）
         function filterTable() {
             const input = document.querySelector('.search-input');
@@ -359,7 +313,6 @@
                 }
             }
         }
-
         // 2. 回车触发搜索
         function handleKeyDown(event) {
             if (event.key === 'Enter') {
@@ -367,7 +320,6 @@
                 event.preventDefault(); // 阻止表单提交（若有）
             }
         }
-
         // 3. 弹窗数量增减
         function incrementQuantity() {
             currentQuantity++;
@@ -379,12 +331,10 @@
                 document.getElementById('quantity').value = currentQuantity;
             }
         }
-
         // 4. 关闭弹窗
         function closePopup() {
             document.getElementById('myPopup').style.display = 'none';
         }
-
         // 5. 加入购物车（存入localStorage）
         function addToCart() {
             if (!currentProduct) return; // 防止无商品时点击
@@ -406,7 +356,6 @@
                     time: new Date().toLocaleString()
                 });
             }
-
             // 保存到localStorage
             localStorage.setItem('cart', JSON.stringify(cart));
             // 显示加购成功提示
@@ -416,7 +365,6 @@
             // 关闭弹窗
             closePopup();
         }
-
         // 6. 底部导航跳转
         function goToHome() {
             window.location.href = "shop.html"; // 刷新首页
@@ -424,7 +372,6 @@
         function goToCart() {
             window.location.href = "cart.html"; // 跳转到购物车
         }
-
         // 7. 复制微信号
         function copyWechat() {
             const wechatNumber ='meiliaigou4'; // 微信号（可修改）
@@ -439,7 +386,6 @@
                     console.error('复制错误：', err);
                 });
         }
-
         // 点击弹窗外部关闭弹窗（优化体验）
         window.onclick = function(event) {
             const popup = document.getElementById('myPopup');
