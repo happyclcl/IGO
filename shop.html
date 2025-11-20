@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>爱购</title>
+    <title>爱购 - shop</title>
     <style>
+        /* 原有基础样式保留 */
        .search-input {
             width: 100%;
             height: 44px;
@@ -34,6 +35,37 @@
         th {
             background-color: #f8f8f8;
             font-weight: 600;
+            /* 为筛选菜单预留定位空间 */
+            position: relative;
+            cursor: pointer; /* 提示可点击筛选 */
+        }
+        /* 筛选相关样式：下拉菜单 + 图标 */
+       .filter-icon {
+            margin-left: 5px;
+            color: #666;
+            font-size: 14px;
+        }
+       .filter-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            min-width: 100px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            list-style: none;
+            padding: 5px 0;
+            margin: 0;
+            display: none; /* 默认隐藏 */
+            z-index: 200; /* 确保在表格上方 */
+        }
+       .filter-dropdown li {
+            padding: 6px 12px;
+            cursor: pointer;
+        }
+       .filter-dropdown li:hover {
+            background-color: #f0f0f0;
         }
        .popup {
             display: none;
@@ -57,8 +89,7 @@
             border-radius: 4px;
             cursor: pointer;
         }
-       .close-btn,
-       .add-btn {
+       .close-btn,.add-btn {
             padding: 10px 20px;
             margin-top: 15px;
             border-radius: 4px;
@@ -75,19 +106,34 @@
             color: white;
             border: none;
         }
+        /* 底部按钮样式保留 */
        .bottom-buttons {
-            margin: 20px 0;
-            text-align: center;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background-color: #fff;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            padding: 0 20px;
+            z-index: 100;
         }
        .bottom-button {
             padding: 10px 20px;
-            margin: 0 10px;
             background-color: #8b4513;
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             font-size: 14px;
+            transition: background-color 0.2s;
+        }
+       .bottom-button:hover {
+            background-color: #6d380e;
         }
        .added-toast {
             position: fixed;
@@ -119,93 +165,73 @@
             color: #ff4444;
             font-size: 16px;
         }
-    </style>
-    <style>
-        /* 基础样式重置 */
+        /* 基础样式重置保留 */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
         body {
-            /* 给主体内容添加边距，避免被顶部搜索栏和底部按钮遮挡 */
-            margin-top: 60px;  /* 等于搜索栏高度 */
-            margin-bottom: 70px;  /* 等于底部按钮区域高度 */
+            margin-top: 60px;
+            margin-bottom: 70px;
             padding: 20px;
-            min-height: 2000px; /* 仅用于测试滚动效果，实际可删除 */
+            min-height: 2000px;
         }
-        /* 顶部搜索栏 - 固定在顶部 */
-        .search-bar {
-            position: fixed;  /* 固定定位，不随滚动移动 */
-            top: 0;  /* 距离顶部0 */
+       .search-bar {
+            position: fixed;
+            top: 0;
             left: 0;
-            right: 0;  /* 左右贴边，占满宽度 */
-            height: 60px;  /* 固定高度 */
+            right: 0;
+            height: 60px;
             padding: 0 20px;
-            background-color: #fff;  /* 白色背景，避免与内容重叠时透明 */
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* 轻微阴影，区分层级 */
-            display: flex;
-            align-items: center; /* 垂直居中 */
-            z-index: 100;  /* 确保在其他内容上方 */
-        }
-        /* 底部按钮区域 - 固定在底部 */
-        .bottom-buttons {
-            position: fixed;  /* 固定定位 */
-            bottom: 0;  /* 距离底部0 */
-            left: 0;
-            right: 0;  /* 左右贴边，占满宽度 */
-            height: 70px;  /* 固定高度 */
             background-color: #fff;
-            box-shadow: 0 -2px 5px rgba(0,0,0,0.1); /* 顶部阴影，区分层级 */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             display: flex;
-            justify-content: center; /* 水平居中 */
-            align-items: center; /* 垂直居中 */
-            gap: 20px; /* 按钮之间的间距 */
-            padding: 0 20px;
-            z-index: 100; /* 确保在其他内容上方 */
-        }
-        .bottom-button {
-            padding: 10px 20px;
-            background-color: #8b4513;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background-color 0.2s;
-        }
-        .bottom-button:hover {
-            background-color: #6d380e;
+            align-items: center;
+            z-index: 100;
         }
     </style>
 </head>
 <body>
-    <!-- 顶部固定搜索框（保留唯一搜索框，绑定搜索功能） -->
+    <!-- 顶部搜索栏保留 -->
     <div class="search-bar">
         <input type="search" class="search-input" placeholder="请输入商品名称，未列产品可微信咨询" 
                oninput="filterTable()" onkeydown="handleKeyDown(event)">
     </div>
 
-    <!-- 商品表格 -->
+    <!-- 商品表格：新增「说明」列 + 筛选下拉 -->
     <table>
         <thead>
             <tr>
                 <th>时间</th>
                 <th>商品名</th>
+                <!-- 新增「说明」列，带筛选功能 -->
+                <th onclick="toggleFilterDropdown()">
+                    说明
+                    <span class="filter-icon">▼</span>
+                    <!-- 筛选下拉菜单 -->
+                    <ul class="filter-dropdown" id="descFilterDropdown">
+                        <li onclick="filterByDescription('全部')">全部</li>
+                        <li onclick="filterByDescription('特价')">特价</li>
+                        <li onclick="filterByDescription('新品')">新品</li>
+                        <li onclick="filterByDescription('折损')">折损</li>
+                    </ul>
+                </th>
                 <th>价格</th>
                 <th>操作</th>
             </tr>
         </thead>
         <tbody id="tableBody">
-            <!-- 商品行将从products.json动态加载 -->
+            <!-- 商品行从new.json动态加载 -->
         </tbody>
     </table>
-    
-    <!-- 数据加载失败提示（默认隐藏） -->
+
+    <!-- 数据加载失败提示保留 -->
     <div class="load-error" id="loadError" style="display: none;">
-        商品数据加载失败，请检查products.json文件是否存在且格式正确！
+        商品数据加载失败，请检查new.json文件是否存在且格式正确！
     </div>
-    <!-- 加购弹窗 -->
+
+    <!-- 加购弹窗保留 -->
     <div class="popup" id="myPopup">
         <div class="popup-content">
             <h2>添加购物清单</h2>
@@ -218,13 +244,15 @@
             <button class="add-btn" onclick="addToCart()">加入清单</button>
         </div>
     </div>
-    <!-- 已加购提示 -->
+
+    <!-- 提示组件保留 -->
     <div class="added-toast" id="addedToast">已加购</div>
-    <!-- 复制微信提示 -->
     <div class="copied-toast" id="copiedToast">微信复制成功</div>
-    <!-- 底部固定导航按钮（保留唯一底部按钮区） -->
+
+    <!-- 底部按钮保留 -->
     <div class="bottom-buttons">
         <button class="bottom-button" onclick="goToHome()">首页</button>
+        <button class="bottom-button" onclick="goToSpecial()">特价/新品</button>
         <button class="bottom-button" onclick="goToCart()">购物清单</button>
         <button class="bottom-button" onclick="copyWechat()">复制微信</button>
     </div>
@@ -232,166 +260,177 @@
     <script>
         const tableBody = document.getElementById('tableBody');
         const loadError = document.getElementById('loadError');
-        let currentProduct = null; // 当前选中的商品
-        let currentQuantity = 1; // 加购数量（默认1）
-        // 核心：读取同文件夹的products.json文件
-        fetch('products.json') // 路径确保与shop.html同级
+        let currentProduct = null;
+        let currentQuantity = 1;
+        let currentDescFilter = '全部'; // 全局筛选状态：默认“全部”
+
+        // 1. 加载new.json数据（新增「说明」列处理）
+        fetch('new.json')
            .then(response => {
-                // 检查文件是否存在（404错误）
-                if (!response.ok) {
-                    throw new Error(`文件不存在或无法访问，状态码：${response.status}`);
-                }
-                return response.json(); // 解析JSON数据
+                if (!response.ok) throw new Error(`文件访问失败，状态码：${response.status}`);
+                return response.json();
             })
            .then(products => {
-                // 检查JSON是否为数组格式
-                if (!Array.isArray(products)) {
-                    throw new Error('products.json格式错误，需为数组类型（如：[{"商品名":"xxx","价格":xx},...]）');
-                }
-                // 动态生成商品表格行
+                if (!Array.isArray(products)) throw new Error('new.json需为数组格式');
+                
+                // 动态生成表格行（新增「说明」列单元格）
                 products.forEach(product => {
-                    // 跳过缺少关键字段的商品（避免报错）
                     if (!product.商品名 || product.价格 === undefined) {
-                        console.warn('跳过无效商品（缺少商品名或价格）：', product);
+                        console.warn('跳过无效商品（缺少商品名/价格）：', product);
                         return;
                     }
                     const row = document.createElement('tr');
-                    // 时间列（当前时间）
+                    // 时间列
                     const timeCell = document.createElement('td');
-                    timeCell.textContent = new Date().toLocaleString(); // 格式：2025/11/5 16:48:00
+                    timeCell.textContent = new Date().toLocaleString();
                     // 商品名列
                     const nameCell = document.createElement('td');
                     nameCell.textContent = product.商品名;
+                    // 新增：说明列（从json取“说明”字段，无则显示“无”）
+                    const descCell = document.createElement('td');
+                    descCell.textContent = product.说明 || '无'; // 兼容无说明的商品
                     // 价格列
                     const priceCell = document.createElement('td');
-                    priceCell.textContent = `¥${Number(product.价格).toFixed(2)}`; // 统一价格格式（保留2位小数）
-                    // 操作列（加购按钮）
+                    priceCell.textContent = `¥${Number(product.价格).toFixed(2)}`;
+                    // 操作列
                     const actionCell = document.createElement('td');
                     const addBtn = document.createElement('button');
                     addBtn.textContent = '加购';
-                    addBtn.style.padding = '5px 10px';
-                    addBtn.style.backgroundColor = '#8b4513';
-                    addBtn.style.color = 'white';
-                    addBtn.style.border = 'none';
-                    addBtn.style.borderRadius = '3px';
-                    addBtn.style.cursor = 'pointer';
-                    // 点击加购按钮打开弹窗
+                    addBtn.style.cssText = 'padding:5px 10px;background:#8b4513;color:white;border:none;border-radius:3px;cursor:pointer';
                     addBtn.onclick = () => {
                         currentProduct = product;
+                        // 弹窗信息新增「说明」显示
+                        const descText = product.说明 || '无';
                         document.getElementById('popupProductInfo').textContent = 
-                            `${product.商品名} ¥${Number(product.价格).toFixed(2)}`;
-                        currentQuantity = 1; // 重置数量为1
+                            `${product.商品名}（${descText}） ¥${Number(product.价格).toFixed(2)}`;
+                        currentQuantity = 1;
                         document.getElementById('quantity').value = currentQuantity;
                         document.getElementById('myPopup').style.display = 'block';
                     };
                     actionCell.appendChild(addBtn);
-                    // 组装表格行
+
+                    // 组装行（顺序：时间→商品名→说明→价格→操作）
                     row.appendChild(timeCell);
                     row.appendChild(nameCell);
+                    row.appendChild(descCell);
                     row.appendChild(priceCell);
                     row.appendChild(actionCell);
                     tableBody.appendChild(row);
                 });
+
+                // 初始加载后执行一次筛选（确保默认“全部”状态正常）
+                filterTable();
             })
            .catch(error => {
-                // 显示加载失败提示
                 loadError.style.display = 'block';
-                console.error('商品数据加载失败：', error);
+                console.error('数据加载失败：', error);
             });
-        // 1. 搜索功能（根据商品名过滤）
+
+        // 2. 原有搜索功能（升级：兼容「说明」筛选）
         function filterTable() {
-            const input = document.querySelector('.search-input');
-            const filter = input.value.trim().toUpperCase(); // 转为大写，忽略大小写
+            const searchInput = document.querySelector('.search-input').value.trim().toUpperCase();
             const rows = tableBody.getElementsByTagName('tr');
-            
+
             for (let i = 0; i < rows.length; i++) {
-                const nameCell = rows[i].getElementsByTagName('td')[1]; // 商品名在第2列（index=1）
-                if (nameCell) {
-                    const productName = nameCell.textContent.toUpperCase();
-                    // 匹配则显示，不匹配则隐藏
-                    rows[i].style.display = productName.includes(filter)? '' : 'none';
-                }
+                const nameCell = rows[i].getElementsByTagName('td')[1]; // 商品名（索引1）
+                const descCell = rows[i].getElementsByTagName('td')[2]; // 说明（索引2）
+                const nameMatch = nameCell.textContent.toUpperCase().includes(searchInput);
+                const descMatch = currentDescFilter === '全部' 
+                    ? true 
+                    : descCell.textContent === currentDescFilter;
+
+                // 同时满足“搜索匹配”和“筛选匹配”才显示
+                rows[i].style.display = (nameMatch && descMatch)? '' : 'none';
             }
         }
-        // 2. 回车触发搜索
+
+        // 3. 新增：「说明」列筛选功能
+        // 切换筛选下拉菜单显示/隐藏
+        function toggleFilterDropdown() {
+            const dropdown = document.getElementById('descFilterDropdown');
+            dropdown.style.display = dropdown.style.display === 'block'? 'none' : 'block';
+        }
+        // 执行筛选（更新筛选状态并触发过滤）
+        function filterByDescription(desc) {
+            currentDescFilter = desc;
+            filterTable(); // 筛选后立即更新表格
+            toggleFilterDropdown(); // 关闭下拉菜单
+        }
+
+        // 4. 点击页面其他区域关闭筛选下拉
+        window.onclick = function(event) {
+            const popup = document.getElementById('myPopup');
+            const dropdown = document.getElementById('descFilterDropdown');
+            // 关闭加购弹窗
+            if (event.target === popup) closePopup();
+            // 关闭筛选下拉（点击非下拉区域）
+            if (!event.target.closest('th') && dropdown.style.display === 'block') {
+                dropdown.style.display = 'none';
+            }
+        }
+
+        // 5. 原有功能保留（回车搜索、数量增减、加购、导航等）
         function handleKeyDown(event) {
             if (event.key === 'Enter') {
                 filterTable();
-                event.preventDefault(); // 阻止表单提交（若有）
+                event.preventDefault();
             }
         }
-        // 3. 弹窗数量增减
         function incrementQuantity() {
             currentQuantity++;
             document.getElementById('quantity').value = currentQuantity;
         }
         function decrementQuantity() {
-            if (currentQuantity > 1) { // 数量不低于1
+            if (currentQuantity > 1) {
                 currentQuantity--;
                 document.getElementById('quantity').value = currentQuantity;
             }
         }
-        // 4. 关闭弹窗
         function closePopup() {
             document.getElementById('myPopup').style.display = 'none';
         }
-        // 5. 加入购物车（存入localStorage）
         function addToCart() {
-            if (!currentProduct) return; // 防止无商品时点击
-            
-            // 读取现有购物车数据（无则为空数组）
+            if (!currentProduct) return;
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
-            // 检查商品是否已在购物车（避免重复添加，只增加数量）
             const existingItemIndex = cart.findIndex(item => item.name === currentProduct.商品名);
-            
             if (existingItemIndex > -1) {
-                // 已存在：数量叠加
                 cart[existingItemIndex].quantity += currentQuantity;
             } else {
-                // 不存在：新增商品
                 cart.push({
                     name: currentProduct.商品名,
-                    price: Number(currentProduct.价格), // 转为数字类型
+                    desc: currentProduct.说明 || '无', // 购物车保留说明
+                    price: Number(currentProduct.价格),
                     quantity: currentQuantity,
                     time: new Date().toLocaleString()
                 });
             }
-            // 保存到localStorage
             localStorage.setItem('cart', JSON.stringify(cart));
-            // 显示加购成功提示
             const toast = document.getElementById('addedToast');
             toast.style.display = 'block';
-            setTimeout(() => toast.style.display = 'none', 2000); // 2秒后隐藏
-            // 关闭弹窗
+            setTimeout(() => toast.style.display = 'none', 2000);
             closePopup();
         }
-        // 6. 底部导航跳转
         function goToHome() {
-            window.location.href = "shop.html"; // 刷新首页
+            window.location.href = "index.html";
+        }
+        function goToSpecial() {
+            window.location.href = "shop.html"; // 需手动创建special.html
         }
         function goToCart() {
-            window.location.href = "cart.html"; // 跳转到购物车
+            window.location.href = "cart.html";
         }
-        // 7. 复制微信号
         function copyWechat() {
-            const wechatNumber ='meiliaigou4'; // 微信号（可修改）
+            const wechatNumber ='meiliaigou4';
             navigator.clipboard.writeText(wechatNumber)
                .then(() => {
                     const toast = document.getElementById('copiedToast');
                     toast.style.display = 'block';
-                    setTimeout(() => toast.style.display = 'none', 5000); // 5秒后隐藏
+                    setTimeout(() => toast.style.display = 'none', 5000);
                 })
                .catch(err => {
                     alert('复制失败，请手动复制：' + wechatNumber);
                     console.error('复制错误：', err);
                 });
-        }
-        // 点击弹窗外部关闭弹窗（优化体验）
-        window.onclick = function(event) {
-            const popup = document.getElementById('myPopup');
-            if (event.target === popup) {
-                closePopup();
-            }
         }
     </script>
 </body>

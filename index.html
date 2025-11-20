@@ -225,6 +225,7 @@
     <!-- 底部固定导航按钮（保留唯一底部按钮区） -->
     <div class="bottom-buttons">
         <button class="bottom-button" onclick="goToHome()">首页</button>
+         <button class="bottom-button" onclick="goToSpecial()">特价/新品</button>
         <button class="bottom-button" onclick="goToCart()">购物清单</button>
         <button class="bottom-button" onclick="copyWechat()">复制微信</button>
     </div>
@@ -367,8 +368,12 @@
         }
         // 6. 底部导航跳转
         function goToHome() {
-            window.location.href = "shop.html"; // 刷新首页
+            window.location.href = "index.html"; // 刷新首页
         }
+        // 新增：特价/新品页面跳转
+    function goToSpecial() {
+        window.location.href = "shop.html";
+    }
         function goToCart() {
             window.location.href = "cart.html"; // 跳转到购物车
         }
