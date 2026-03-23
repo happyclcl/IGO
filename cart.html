@@ -10,9 +10,10 @@
             padding: 0;
             background-color: #f4f4f4;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            padding-bottom: 80px; /* 给底部固定栏留空间 */
+            padding-bottom: 80px;
         }
-       .top-tip {
+
+        .top-tip {
             padding: 15px;
             background-color: #fff5eb;
             border-bottom: 1px solid #ffd7a5;
@@ -20,51 +21,75 @@
             font-size: 14px;
             color: #d35400;
         }
-       .cart-container {
+
+        .cart-container {
             padding: 20px;
+            max-width: 1200px; /* 页面内容最大宽度，可根据需要调整 */
+            margin: 0 auto; /* 内容居中 */
         }
-       .cart-table {
+
+        .cart-table {
             width: 100%;
             background-color: white;
             border-collapse: collapse;
             margin-top: 10px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
-       .cart-table th,
-       .cart-table td {
+
+        .cart-table th,
+        .cart-table td {
             padding: 12px;
             border: 1px solid #eee;
             text-align: left;
         }
-       .cart-table th {
+
+        .cart-table th {
             background-color: #f8f8f8;
             font-weight: 600;
             color: #333;
         }
-       .operation-btn {
+
+        .operation-btn {
             margin-right: 5px;
-            padding: 5px 10px; /* 保持原有内边距大小 */
-            border: none; /* 与复制全部按钮一致，去除边框 */
-            border-radius: 4px; /* 与复制全部按钮一致的圆角 */
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
             cursor: pointer;
             font-size: 14px;
-            background-color: #8b4513; /* 与复制全部按钮相同的背景色 */
-            color: white; /* 与复制全部按钮相同的文字色 */
+            background-color: #8b4513;
+            color: white;
         }
-       .operation-btn:hover {
-            background-color: #6d380e; /* 与复制全部按钮相同的hover效果 */
+
+        .operation-btn:hover {
+            background-color: #6d380e;
         }
-       .no-data {
+
+        /* 空数据区域 */
+        .no-data {
             text-align: center;
-            padding: 100px 0;
+            padding: 30px 0 10px 0;
             color: #666;
         }
-       .no-data img {
-            width: 150px;
-            margin-top: 20px;
-            opacity: 0.6;
+
+        /* 背景图：完全按原图比例展示，仅限制最大宽度不超容器 */
+        .bg-image {
+            display: block;
+            /* 取消固定宽度限制，让图片按原图尺寸显示 */
+            width: auto; 
+            height: auto;
+            /* 最大宽度不超过容器（避免太宽），小于原图时按原图显示 */
+            max-width: 100%; 
+            margin: 0 auto 20px auto; /* 居中，底部留间距 */
         }
-       .bottom-container {
+
+        .postage-note {
+            color: #d35400;
+            font-size: 14px;
+            margin-top: 5px;
+            text-align: center; /* 邮费提示也居中，和图片对齐 */
+        }
+
+        .bottom-container {
             position: fixed;
             bottom: 0;
             width: 100%;
@@ -76,6 +101,7 @@
             align-items: center;
             box-sizing: border-box;
         }
+
         button {
             padding: 8px 15px;
             background-color: #8b4513;
@@ -85,21 +111,25 @@
             cursor: pointer;
             font-size: 14px;
         }
+
         button:hover {
             background-color: #6d380e;
         }
-       .total-price {
+
+        .total-price {
             color: #8b0000;
             font-weight: bold;
             font-size: 16px;
         }
-       .quantity-control {
+
+        .quantity-control {
             display: flex;
             gap: 5px;
             align-items: center;
             justify-content: center;
         }
-       .quantity-btn {
+
+        .quantity-btn {
             padding: 5px 10px;
             border: 1px solid #ccc;
             border-radius: 3px;
@@ -107,19 +137,14 @@
             cursor: pointer;
             font-size: 14px;
         }
-       .quantity-input {
+
+        .quantity-input {
             width: 40px;
             text-align: center;
             border: 1px solid #ccc;
             border-radius: 3px;
             padding: 5px;
             font-size: 14px;
-        }
-       .postage-note {
-            color: #d35400;
-            font-size: 14px;
-            margin-top: 5px;
-            text-align: right;
         }
     </style>
 </head>
@@ -142,16 +167,20 @@
             </thead>
             <tbody id="cartBody"></tbody>
         </table>
-        <!-- 无数据提示 -->
+
+        <!-- 空购物车提示 + 背景图 -->
         <div class="no-data" id="noData" style="display: none;">
             <p>购物车是空的~</p>
-            <img src="https://via.placeholder.com/150" alt="空购物车图标">
+            <!-- 空车时显示原图比例的图片 -->
+            <img src="答疑3.jpg" class="bg-image" alt="空购物车背景">
         </div>
-        <!-- 邮费提示（默认隐藏） -->
-        <div class="postage-note" id="postageNote" style="display: none;"></div>
+
+        <!-- 邮费提示 + 有商品时的背景图 -->
+        <div class="postage-note" id="postageNote" style="display: none;">
+            <!-- 有商品时，文字下面显示原图比例的图片 -->
+        </div>
     </div>
 
-    <!-- 底部操作区 -->
     <div class="bottom-container">
         <div>
             <button onclick="clearCart()">清空</button>
@@ -172,31 +201,28 @@
         const noDataElem = document.getElementById('noData');
         const postageNoteElem = document.getElementById('postageNote');
 
-        // 核心：渲染购物车数据（从localStorage读取）
         function renderCart() {
-            // 读取购物车数据（无则为空数组）
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
-            cartBody.innerHTML = ''; // 清空原有内容
-            let totalAmount = 0; // 总金额（不含邮费）
-            let totalQuantity = 0; // 总数量
+            cartBody.innerHTML = '';
+            let totalAmount = 0;
+            let totalQuantity = 0;
 
-            // 生成购物车商品行
             cart.forEach((item, index) => {
-                const subtotal = item.price * item.quantity; // 小计
-                totalAmount += subtotal; // 累加总金额
-                totalQuantity += item.quantity; // 累加总数量
+                const subtotal = item.price * item.quantity;
+                totalAmount += subtotal;
+                totalQuantity += item.quantity;
 
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${item.name}</td>
-                    <td>¥${item.price.toFixed(2)}</td> <!-- 单价保留2位小数 -->
+                    <td>¥${item.price.toFixed(2)}</td>
                     <td class="quantity-control">
                         <button class="quantity-btn" onclick="decrementQuantity(${index})">-</button>
                         <input type="number" class="quantity-input" value="${item.quantity}" min="1" 
                                onchange="updateQuantity(${index}, this.value)">
                         <button class="quantity-btn" onclick="incrementQuantity(${index})">+</button>
                     </td>
-                    <td>¥${subtotal.toFixed(2)}</td> <!-- 小计保留2位小数 -->
+                    <td>¥${subtotal.toFixed(2)}</td>
                     <td>
                         <button class="operation-btn" onclick="copyItem(${index})">复制</button>
                         <button class="operation-btn" onclick="deleteItem(${index})">删除</button>
@@ -205,7 +231,6 @@
                 cartBody.appendChild(row);
             });
 
-            // 生成合计行（仅当有商品时显示）
             if (cart.length > 0) {
                 const totalRow = document.createElement('tr');
                 totalRow.style.backgroundColor = '#f8f8f8';
@@ -218,27 +243,24 @@
                 cartBody.appendChild(totalRow);
             }
 
-            // 更新总金额显示
             totalPriceElem.textContent = `¥${totalAmount.toFixed(2)}`;
+            noDataElem.style.display = cart.length === 0 ? 'block' : 'none';
 
-            // 显示/隐藏无数据提示
-            noDataElem.style.display = cart.length === 0? 'block' : 'none';
-
-            // 显示邮费提示（未满300加5元）
             if (cart.length > 0) {
                 postageNoteElem.style.display = 'block';
                 if (totalAmount < 300) {
                     const finalAmount = totalAmount + 5;
-                    postageNoteElem.textContent = `⚠️ 未满300元，需加5元邮费，最终应付：¥${finalAmount.toFixed(2)}`;
+                    postageNoteElem.innerHTML = `⚠️ 未满300元，需加5元邮费，最终应付：¥${finalAmount.toFixed(2)}
+                        <br><img src="答疑3.jpg" class="bg-image" alt="背景图">`;
                 } else {
-                    postageNoteElem.textContent = '✅ 满300元，免邮费';
+                    postageNoteElem.innerHTML = `✅ 满300元，免邮费
+                        <br><img src="答疑3.jpg" class="bg-image" alt="背景图">`;
                 }
             } else {
                 postageNoteElem.style.display = 'none';
             }
         }
 
-        // 1. 清空购物车
         function clearCart() {
             if (confirm('确定要清空购物车吗？')) {
                 localStorage.removeItem('cart');
@@ -247,38 +269,33 @@
             }
         }
 
-        // 2. 复制单个商品信息
         function copyItem(index) {
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
             const item = cart[index];
             const subtotal = item.price * item.quantity;
             const text = `${item.name} | 单价：¥${item.price.toFixed(2)} | 数量：${item.quantity} | 小计：¥${subtotal.toFixed(2)}`;
             navigator.clipboard.writeText(text)
-               .then(() => alert('商品信息复制成功'))
-               .catch(() => alert('复制失败，请手动复制：' + text));
+                .then(() => alert('商品信息复制成功'))
+                .catch(() => alert('复制失败，请手动复制：' + text));
         }
 
-        // 3. 删除单个商品
         function deleteItem(index) {
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
-            const deletedItem = cart[index];
-            if (confirm(`确定要删除「${deletedItem.name}」吗？`)) {
-                cart.splice(index, 1); // 移除对应商品
+            if (confirm(`确定要删除「${cart[index].name}」吗？`)) {
+                cart.splice(index, 1);
                 localStorage.setItem('cart', JSON.stringify(cart));
                 renderCart();
                 alert('商品已删除');
             }
         }
 
-        // 4. 增加商品数量
         function incrementQuantity(index) {
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
             cart[index].quantity++;
             localStorage.setItem('cart', JSON.stringify(cart));
-            renderCart(); // 重新渲染更新数据
+            renderCart();
         }
 
-        // 5. 减少商品数量（不低于1）
         function decrementQuantity(index) {
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
             if (cart[index].quantity > 1) {
@@ -290,16 +307,14 @@
             }
         }
 
-        // 6. 手动修改数量（输入框）
         function updateQuantity(index, value) {
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
-            const newQuantity = Math.max(1, parseInt(value, 10) || 1); // 确保数量≥1，且为有效数字
+            const newQuantity = Math.max(1, parseInt(value, 10) || 1);
             cart[index].quantity = newQuantity;
             localStorage.setItem('cart', JSON.stringify(cart));
             renderCart();
         }
 
-        // 7. 复制全部购物车信息
         function copyAll() {
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
             if (cart.length === 0) {
@@ -307,7 +322,6 @@
                 return;
             }
 
-            // 拼接商品信息
             let text = '【购物清单】\n';
             let totalAmount = 0;
             cart.forEach((item, index) => {
@@ -317,7 +331,6 @@
                 text += `   单价：¥${item.price.toFixed(2)} | 数量：${item.quantity} | 小计：¥${subtotal.toFixed(2)}\n`;
             });
 
-            // 拼接合计和邮费
             text += '\n【合计】\n';
             text += `总数量：${cart.reduce((sum, item) => sum + item.quantity, 0)}件\n`;
             text += `总金额（不含邮费）：¥${totalAmount.toFixed(2)}\n`;
@@ -330,24 +343,19 @@
                 text += `最终应付：¥${totalAmount.toFixed(2)}\n`;
             }
 
-            // 复制到剪贴板
             navigator.clipboard.writeText(text)
-               .then(() => alert('全部购物清单复制成功'))
-               .catch(() => alert('复制失败，请手动复制：\n' + text));
+                .then(() => alert('全部购物清单复制成功'))
+                .catch(() => alert('复制失败，请手动复制：\n' + text));
         }
 
-        // 8. 导航跳转
         function goToHome() {
             window.location.href = "index.html";
         }
         function goToCart() {
-            window.location.reload(); // 刷新购物车
+            window.location.reload();
         }
 
-        // 页面加载时初始化购物车
         window.onload = renderCart;
-
-        // 顶部「复制报价」按钮绑定事件
         document.getElementById('copyButton').addEventListener('click', copyAll);
     </script>
 </body>
