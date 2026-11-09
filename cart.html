@@ -150,7 +150,7 @@
 </head>
 <body>
     <div class="top-tip">
-        未满300需在合计价格上再加5元邮费。若需品牌口袋和未列产品需微信咨询。<br>
+        若需品牌口袋礼盒和未列产品需微信咨询。<br>
         <button id="copyButton">复制报价</button> 返回微信发送复制内容即可直接微信付款自助下单！
     </div>
 
@@ -246,16 +246,10 @@
             totalPriceElem.textContent = `¥${totalAmount.toFixed(2)}`;
             noDataElem.style.display = cart.length === 0 ? 'block' : 'none';
 
-            if (cart.length > 0) {
+           if (cart.length > 0) {
                 postageNoteElem.style.display = 'block';
-                if (totalAmount < 300) {
-                    const finalAmount = totalAmount + 5;
-                    postageNoteElem.innerHTML = `⚠️ 未满300元，需加5元邮费，最终应付：¥${finalAmount.toFixed(2)}
-                        <br><img src="答疑3.jpg" class="bg-image" alt="背景图">`;
-                } else {
-                    postageNoteElem.innerHTML = `✅ 满300元，免邮费
-                        <br><img src="答疑3.jpg" class="bg-image" alt="背景图">`;
-                }
+                postageNoteElem.innerHTML = `✅ 全场包邮
+                <br><img src="答疑3.jpg" class="bg-image" alt="背景图">`;
             } else {
                 postageNoteElem.style.display = 'none';
             }
@@ -334,14 +328,8 @@
             text += '\n【合计】\n';
             text += `总数量：${cart.reduce((sum, item) => sum + item.quantity, 0)}件\n`;
             text += `总金额（不含邮费）：¥${totalAmount.toFixed(2)}\n`;
-            if (totalAmount < 300) {
-                const finalAmount = totalAmount + 5;
-                text += `邮费：¥5.00（未满300元）\n`;
-                text += `最终应付：¥${finalAmount.toFixed(2)}\n`;
-            } else {
-                text += `邮费：¥0.00（满300元免邮）\n`;
-                text += `最终应付：¥${totalAmount.toFixed(2)}\n`;
-            }
+            text += `邮费：¥0.00（全场包邮）\n`;
+            text += `最终应付：¥${totalAmount.toFixed(2)}\n`;
 
             navigator.clipboard.writeText(text)
                 .then(() => alert('全部购物清单复制成功'))
